@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
 const { Pool } = require('pg');
 
 const app = express();
@@ -165,6 +166,27 @@ app.get('/{*splat}', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.listen(PORT, () => {
-  console.log(`Sistema Casino funcionando en el puerto ${PORT}`);
-});
+async function inicializarBaseDeDatos() {
+  if (!process.env.DATABASE_URL) {
+    throw new Error('DATABASE_URL no esta configurada.');
+  }
+
+  const schemaPath = path.join(__dirname, 'database', 'schema.sql');
+  const schema = fs.readFileSync(schemaPath, 'utf8');
+  await pool.query(schema);
+  console.log('PostgreSQL conectado y esquema verificado.');
+}
+
+async function iniciarServidor() {
+  try {
+    await inicializarBaseDeDatos();
+    app.listen(PORT, () => {
+      console.log(`Sistema Casino funcionando en el puerto ${PORT}`);
+    });
+  } catch (error) {
+    console.error('No se pudo iniciar el servidor:', error.message);
+    process.exit(1);
+  }
+}
+
+iniciarServidor();
