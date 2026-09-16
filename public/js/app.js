@@ -25,7 +25,20 @@ async function cargarEstado() {
     Object.assign(estado, await respuesta.json());
     actualizarPanel();
   } catch (error) {
+    console.error(error);
     actualizarPanel();
+    mostrarAviso('No se pudo conectar con el servidor.');
+  }
+}
+
+async function comprobarBaseDeDatos() {
+  try {
+    const respuesta = await fetch('/api/salud');
+    if (!respuesta.ok) throw new Error('PostgreSQL no disponible');
+    return true;
+  } catch (error) {
+    mostrarAviso('PostgreSQL no está disponible. Revisa DATABASE_URL en Railway.');
+    return false;
   }
 }
 
@@ -46,7 +59,7 @@ function mostrarAviso(mensaje) {
   window.toastTimer = setTimeout(() => toast.classList.add('hidden'), 3500);
 }
 
-function registrarJugadorDemo() {
+async function registrarJugadorDemo() {
   const id = document.getElementById('jugadorId').value.trim();
   const saldo = Number(document.getElementById('saldoInicial').value);
 
@@ -55,17 +68,42 @@ function registrarJugadorDemo() {
     return;
   }
 
-  if (!Number.isInteger(saldo) || saldo < 0) {
-    mostrarAviso('El saldo inicial debe ser un número válido.');
+  if (!Number.isSafeInteger(saldo) || saldo < 0) {
+    mostrarAviso('El saldo inicial debe ser un número válido mayor o igual a 0.');
     return;
   }
 
-  estado.jugadoresActivos += 1;
-  estado.saldoCirculacion += saldo;
-  actualizarPanel();
-  cerrarModalJugador();
-  document.getElementById('jugadorId').value = '';
-  mostrarAviso(`Jugador ${id} registrado con ${dinero(saldo)}.`);
+  const boton = document.querySelector('#modalJugador button[type="submit"], #modalJugador .btn-primary');
+  if (boton) boton.disabled = true;
+
+  try {
+    const respuesta = await fetch('/api/jugadores', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        identificador: id,
+        saldoInicial: saldo
+      })
+    });
+
+    const datos = await respuesta.json();
+
+    if (!respuesta.ok) {
+      throw new Error(datos.error || 'No se pudo registrar el jugador.');
+    }
+
+    cerrarModalJugador();
+    document.getElementById('jugadorId').value = '';
+    document.getElementById('saldoInicial').value = '';
+
+    mostrarAviso(`Jugador ${id} registrado con ${dinero(saldo)}.`);
+    await cargarEstado();
+  } catch (error) {
+    console.error(error);
+    mostrarAviso(error.message);
+  } finally {
+    if (boton) boton.disabled = false;
+  }
 }
 
 document.getElementById('modalJugador').addEventListener('click', event => {
@@ -77,3 +115,4 @@ document.addEventListener('keydown', event => {
 });
 
 cargarEstado();
+comprobarBaseDeDatos();
