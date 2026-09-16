@@ -58,7 +58,7 @@
         <div class="operations">
           <button class="operation-card" onclick="abrirModalJugador()"><span class="operation-symbol">▣</span><span><b>Registrar jugador</b><small>Crear jugador y saldo inicial</small></span><em>›</em></button>
           <button class="operation-card" onclick="mostrarAviso('La gestión de puestos estará disponible en la siguiente etapa.')"><span class="operation-symbol">◆</span><span><b>Puestos de apuesta</b><small>Consultar y administrar puestos</small></span><em>›</em></button>
-          <button class="operation-card" onclick="mostrarAviso('El historial se conectará a PostgreSQL en la siguiente etapa.')"><span class="operation-symbol">◷</span><span><b>Historial</b><small>Consultar movimientos registrados</small></span><em>›</em></button>
+          <button class="operation-card" onclick="mostrarAviso('El historial se conectará a la interfaz en la siguiente etapa.')"><span class="operation-symbol">◷</span><span><b>Historial</b><small>Consultar movimientos registrados</small></span><em>›</em></button>
         </div>
       </article>
 
@@ -69,8 +69,8 @@
     </section>
 
     <section class="panel recent-panel">
-      <div class="panel-heading"><div><p class="eyebrow">ACTIVIDAD</p><h2>Últimos movimientos</h2></div><span class="muted">Sin movimientos todavía</span></div>
-      <div class="empty-state"><div class="empty-icon">◌</div><p>Cuando se registren apuestas, aparecerán aquí.</p></div>
+      <div class="panel-heading"><div><p class="eyebrow">ACTIVIDAD</p><h2>Últimos movimientos</h2></div><span class="muted">Los movimientos se guardan en PostgreSQL</span></div>
+      <div class="empty-state"><div class="empty-icon">◌</div><p>Cuando se registren jugadores o apuestas, aparecerán aquí.</p></div>
     </section>
   </main>
 
@@ -79,8 +79,8 @@
       <button class="close-button" onclick="cerrarModalJugador()">×</button>
       <p class="eyebrow">NUEVO JUGADOR</p>
       <h2>Registrar ingreso</h2>
-      <p class="modal-description">Esta primera versión prepara el flujo para conectar el QR y la base de datos.</p>
-      <label>Identificador del jugador<input id="jugadorId" type="text" placeholder="Ej: A7F82K"></label>
+      <p class="modal-description">El jugador y su saldo inicial se guardarán directamente en PostgreSQL.</p>
+      <label>Identificador del jugador<input id="jugadorId" type="text" placeholder="Ej: A7F82K" maxlength="32"></label>
       <label>Saldo inicial<input id="saldoInicial" type="number" min="0" value="10000"></label>
       <button class="primary-button full" onclick="registrarJugadorDemo()">Crear jugador</button>
     </div>
