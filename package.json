@@ -1,0 +1,13 @@
+{
+  "name": "sistema-casino",
+  "version": "1.0.0",
+  "description": "Sistema web para gestionar jugadores, puestos y saldos de un casino.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
